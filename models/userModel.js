@@ -10,11 +10,11 @@ const addressSchema = new Schema({
     type: String,
     required: false 
   },
-  city_district: {
+  city: {
     type: String,
     required: false
   },
-  pin_code: {
+  pincode: {
     type: String,
     required: false
   },

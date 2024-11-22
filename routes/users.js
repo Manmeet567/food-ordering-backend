@@ -1,13 +1,16 @@
 const express = require('express')
-const { signupUser, loginUser } = require('../controllers/userController')
-
+const { signupUser, loginUser, addAddress, addPaymentMethod } = require('../controllers/userController')
+const requireAuth = require('../middlewares/requireAuth')
+ 
 const router = express.Router()
 
-// login route
 router.post('/login', loginUser)
 
-// signup route
 router.post('/signup', signupUser)
+
+router.post('/add-address', requireAuth, addAddress)
+
+router.post('/add-payment-method', requireAuth, addPaymentMethod)
 
 
 module.exports = router
