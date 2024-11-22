@@ -63,7 +63,7 @@ const userSchema = new Schema({
     type: String,
     required: true,
     unique: true,
-    validate: [validator.isEmail, 'Invalid email format'] // Built-in email validation
+    validate: [validator.isEmail, 'Invalid email format']
   },
   password: {
     type: String,
@@ -78,7 +78,7 @@ userSchema.statics.signup = async function (name, phone_number, email, password,
   
   // Validation
   if (!name || !phone_number || !email || !password) {
-    throw Error('All required fields (name, phone number, email, and password) must be filled');
+    throw Error('All required fields must be filled');
   }
 
   if (!validator.isEmail(email)) {
