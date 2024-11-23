@@ -69,8 +69,12 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-  addresses: [addressSchema], // Array of addresses
-  payment_methods: [paymentMethodSchema] // Array of payment methods
+  profile_image:{
+    type: String,
+    default: 'https://res.cloudinary.com/dianvv6lu/image/upload/v1732342764/267a651a652fb2ee7a3f288490b02114_ahbo9f.jpg'
+  },
+  addresses: [addressSchema],
+  payment_methods: [paymentMethodSchema] 
 });
 
 // Static signup method
