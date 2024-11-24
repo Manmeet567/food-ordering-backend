@@ -18,7 +18,7 @@ const loginUser = async (req, res) => {
 
     res.status(200).json({ email: user.email, token });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -34,7 +34,7 @@ const signupUser = async (req, res) => {
 
     res.status(200).json({ email: user.email, token });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -43,14 +43,14 @@ const addAddress = async (req, res) => {
   const { state, city, pincode, phone_number, full_address } = req.body;
 
   if (!state || !city || !pincode || !phone_number || !full_address) {
-      return res.status(400).json({ error: 'All address fields are required' });
+      return res.status(400).json({ message: 'All address fields are required' });
   }
 
   try {
       const user = await User.findById(req.user._id);
 
       if (!user) {
-          return res.status(404).json({ error: 'User not found' });
+          return res.status(404).json({ message: 'User not found' });
       }
 
       const newAddress = {
@@ -67,7 +67,7 @@ const addAddress = async (req, res) => {
 
       res.status(200).json({ message: 'Address added successfully', user });
   } catch (error) {
-      res.status(500).json({ error: 'Server error' });
+      res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -77,14 +77,14 @@ const addPaymentMethod = async (req, res) => {
 
   // Validate required fields
   if (!card_number || !expiration || !CVC || !name_on_card) {
-      return res.status(400).json({ error: 'All payment method fields are required' });
+      return res.status(400).json({ message: 'All payment method fields are required' });
   }
 
   try {
       const user = await User.findById(req.user._id);
 
       if (!user) {
-          return res.status(404).json({ error: 'User not found' });
+          return res.status(404).json({ message: 'User not found' });
       }
 
       const newPaymentMethod = {
@@ -100,7 +100,7 @@ const addPaymentMethod = async (req, res) => {
 
       res.status(200).json({ message: 'Payment method added successfully', user });
   } catch (error) {
-      res.status(500).json({ error: 'Server error' });
+      res.status(500).json({ message: 'Server error' });
   }
 };
 
