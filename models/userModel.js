@@ -25,6 +25,10 @@ const addressSchema = new Schema({
   full_address: {
     type: String,
     required: false
+  },
+  active: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -45,6 +49,10 @@ const paymentMethodSchema = new Schema({
   name_on_card: {
     type: String,
     required: false
+  },
+  active: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -69,7 +77,7 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-  profile_image:{
+  profile_image: {
     type: String,
     default: 'https://res.cloudinary.com/dianvv6lu/image/upload/v1732342764/267a651a652fb2ee7a3f288490b02114_ahbo9f.jpg'
   },
@@ -79,7 +87,6 @@ const userSchema = new Schema({
 
 // Static signup method
 userSchema.statics.signup = async function (name, phone_number, email, password, addresses = [], payment_methods = []) {
-  
   // Validation
   if (!name || !phone_number || !email || !password) {
     throw Error('All required fields must be filled');
@@ -140,6 +147,30 @@ userSchema.statics.login = async function (email, password) {
   }
 
   return user;
+};
+
+// Method to activate an address and deactivate others
+userSchema.methods.setActiveAddress = async function (addressId) {
+  this.addresses.forEach((address) => {
+    if (address._id.toString() === addressId.toString()) {
+      address.active = true; 
+    } else {
+      address.active = false; 
+    }
+  });
+  await this.save();
+};
+
+// Method to activate a payment method and deactivate others
+userSchema.methods.setActivePaymentMethod = async function (paymentMethodId) {
+  this.payment_methods.forEach((method) => {
+    if (method._id.toString() === paymentMethodId.toString()) {
+      method.active = true;
+    } else {
+      method.active = false; 
+    }
+  });
+  await this.save();
 };
 
 module.exports = mongoose.model('User', userSchema);

@@ -16,7 +16,7 @@ const loginUser = async (req, res) => {
     // Create a JWT token
     const token = createToken(user._id);
 
-    res.status(200).json({ email: user.email, token });
+    res.status(200).json({ token: token });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -32,7 +32,7 @@ const signupUser = async (req, res) => {
     // Create a JWT token
     const token = createToken(user._id);
 
-    res.status(200).json({ email: user.email, token });
+    res.status(200).json({ token: token });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -104,9 +104,27 @@ const addPaymentMethod = async (req, res) => {
   }
 };
 
+const getUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const user = await User.findById(userId).select('-password'); // Exclude password from response
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = {
   loginUser,
   signupUser,
   addAddress,
-  addPaymentMethod
+  addPaymentMethod,
+  getUser
 };
