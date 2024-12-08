@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const userRoutes = require("./routes/users");
 const homeRoutes = require("./routes/home_page_routes");
 const productRoutes = require("./routes/product_page_routes");
+const cartRoutes = require("./routes/cart_routes");
 const app = express();
 
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -31,6 +32,7 @@ app.get("/test-server", (req, res) => {
 app.use("/api/user", userRoutes);
 app.use("/api/home-page", homeRoutes);
 app.use("/api/product-page", productRoutes);
+app.use("/api/cart", cartRoutes);
 
 mongoose
   .connect(MONGODB_URI)

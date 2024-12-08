@@ -1,13 +1,10 @@
-const Cart = require("../models/Cart");
+const Cart = require("../models/cartModel");
 
 const getUserCart = async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const cart = await Cart.findOne({ userId }).populate(
-      "items.itemId",
-      "name price img"
-    );
+    const cart = await Cart.findOne({ userId });
 
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
