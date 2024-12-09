@@ -8,14 +8,14 @@ const cartSchema = new mongoose.Schema({
   },
   items: [
     {
-      itemId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Categories',
-        required: true,
-      },
-      item_name: { type: String, required: true },
-      item_price: { type: Number, required: true },
-      item_img: { type: String },
+      // meal_id: {
+      //   type: mongoose.Schema.Types.ObjectId,
+      //   ref: 'Meals',
+      //   required: true,
+      // },
+      meal_name: { type: String, required: true },
+      meal_price: { type: Number, required: true },
+      meal_img: { type: String },
       item_count: { type: Number, default: 1 },
     },
   ],
