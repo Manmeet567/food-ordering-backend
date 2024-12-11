@@ -4,7 +4,6 @@ const validator = require('validator');
 
 const Schema = mongoose.Schema;
 
-// Define address schema
 const addressSchema = new Schema({
   state: {
     type: String,
@@ -32,7 +31,6 @@ const addressSchema = new Schema({
   }
 });
 
-// Define payment method schema
 const paymentMethodSchema = new Schema({
   card_number: {
     type: String,
@@ -56,7 +54,6 @@ const paymentMethodSchema = new Schema({
   }
 });
 
-// Define user schema
 const userSchema = new Schema({
   name: {
     type: String,
@@ -85,7 +82,7 @@ const userSchema = new Schema({
   payment_methods: [paymentMethodSchema] 
 });
 
-// Static signup method
+
 userSchema.statics.signup = async function (name, phone_number, email, password, addresses = [], payment_methods = []) {
   // Validation
   if (!name || !phone_number || !email || !password) {
@@ -111,7 +108,6 @@ userSchema.statics.signup = async function (name, phone_number, email, password,
     throw Error('Phone number already in use');
   }
 
-  // Hash the password
   const salt = await bcrypt.genSalt(10);
   const hash = await bcrypt.hash(password, salt);
 
@@ -121,14 +117,13 @@ userSchema.statics.signup = async function (name, phone_number, email, password,
     phone_number,
     email,
     password: hash,
-    addresses, // Optional array of addresses
-    payment_methods // Optional array of payment methods
+    addresses, 
+    payment_methods
   });
 
   return user;
 };
 
-// Static login method
 userSchema.statics.login = async function (email, password) {
   if (!email || !password) {
     throw Error('All fields must be filled');
