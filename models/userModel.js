@@ -144,28 +144,26 @@ userSchema.statics.login = async function (email, password) {
   return user;
 };
 
-// Method to activate an address and deactivate others
-userSchema.methods.setActiveAddress = async function (addressId) {
-  this.addresses.forEach((address) => {
-    if (address._id.toString() === addressId.toString()) {
-      address.active = true; 
-    } else {
-      address.active = false; 
-    }
-  });
-  await this.save();
-};
+// userSchema.methods.setActiveAddress = async function (addressId) {
+//   this.addresses.forEach((address) => {
+//     if (address._id.toString() === addressId.toString()) {
+//       address.active = true; 
+//     } else {
+//       address.active = false; 
+//     }
+//   });
+//   await this.save();
+// };
 
-// Method to activate a payment method and deactivate others
-userSchema.methods.setActivePaymentMethod = async function (paymentMethodId) {
-  this.payment_methods.forEach((method) => {
-    if (method._id.toString() === paymentMethodId.toString()) {
-      method.active = true;
-    } else {
-      method.active = false; 
-    }
-  });
-  await this.save();
-};
+// userSchema.methods.setActivePaymentMethod = async function (paymentMethodId) {
+//   this.payment_methods.forEach((method) => {
+//     if (method._id.toString() === paymentMethodId.toString()) {
+//       method.active = true;
+//     } else {
+//       method.active = false; 
+//     }
+//   });
+//   await this.save();
+// };
 
 module.exports = mongoose.model('User', userSchema);

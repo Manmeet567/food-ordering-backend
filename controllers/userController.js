@@ -1,11 +1,10 @@
-const User = require('../models/userModel');
-const jwt = require('jsonwebtoken');
+const User = require("../models/userModel");
+const jwt = require("jsonwebtoken");
 
 // Function to create JWT token
 const createToken = (_id) => {
-  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: '3d' });
+  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "3d" });
 };
-
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
@@ -22,12 +21,19 @@ const loginUser = async (req, res) => {
   }
 };
 
-
 const signupUser = async (req, res) => {
-  const { name, phone_number, email, password, addresses, payment_methods } = req.body;
+  const { name, phone_number, email, password, addresses, payment_methods } =
+    req.body;
 
   try {
-    const user = await User.signup(name, phone_number, email, password, addresses, payment_methods);
+    const user = await User.signup(
+      name,
+      phone_number,
+      email,
+      password,
+      addresses,
+      payment_methods
+    );
 
     // Create a JWT token
     const token = createToken(user._id);
@@ -38,36 +44,43 @@ const signupUser = async (req, res) => {
   }
 };
 
-
 const addAddress = async (req, res) => {
   const { state, city, pincode, phone_number, full_address } = req.body;
 
   if (!state || !city || !pincode || !phone_number || !full_address) {
-      return res.status(400).json({ message: 'All address fields are required' });
+    return res.status(400).json({ message: "All address fields are required" });
   }
 
   try {
-      const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id);
 
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-      const newAddress = {
-          state,
-          city,
-          pincode,
-          phone_number,
-          full_address
-      };
+    const isFirstAddress = user.addresses.length === 0;
 
-      user.addresses.push(newAddress);
+    const newAddress = {
+      state,
+      city,
+      pincode,
+      phone_number,
+      full_address,
+      active: isFirstAddress, // Set active to true if it's the first address
+    };
 
-      await user.save();
+    user.addresses.push(newAddress);
 
-      res.status(200).json({ message: 'Address added successfully', user });
+    // If this is the first address, set it as active
+    if (isFirstAddress) {
+      newAddress.active = true;
+    }
+
+    await user.save();
+
+    res.status(200).json({ message: "Address added successfully", user });
   } catch (error) {
-      res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -80,12 +93,12 @@ const editAddress = async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const address = user.addresses.id(addressId);
     if (!address) {
-      return res.status(404).json({ message: 'Address not found' });
+      return res.status(404).json({ message: "Address not found" });
     }
 
     // Update fields only if provided in the request
@@ -96,9 +109,9 @@ const editAddress = async (req, res) => {
     if (full_address) address.full_address = full_address;
 
     await user.save();
-    res.status(200).json({ message: 'Address updated successfully', user });
+    res.status(200).json({ message: "Address updated successfully", user });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -110,53 +123,58 @@ const removeAddress = async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const address = user.addresses.id(addressId);
     if (!address) {
-      return res.status(404).json({ message: 'Address not found' });
+      return res.status(404).json({ message: "Address not found" });
     }
 
-    address.remove();
+    // Use Mongoose's $pull to remove the address by ID
+    user.addresses.pull({ _id: addressId });
+
     await user.save();
-    res.status(200).json({ message: 'Address removed successfully', user });
+    res.status(200).json({ message: "Address removed successfully", user });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
+    console.log(error);
   }
 };
-
-
 
 const addPaymentMethod = async (req, res) => {
   const { card_number, expiration, CVC, name_on_card } = req.body;
 
   // Validate required fields
   if (!card_number || !expiration || !CVC || !name_on_card) {
-      return res.status(400).json({ message: 'All payment method fields are required' });
+    return res
+      .status(400)
+      .json({ message: "All payment method fields are required" });
   }
 
   try {
-      const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id);
 
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-      const newPaymentMethod = {
-          card_number,
-          expiration,
-          CVC,
-          name_on_card,
-      };
+    const newPaymentMethod = {
+      card_number,
+      expiration,
+      CVC,
+      name_on_card,
+    };
 
-      user.payment_methods.push(newPaymentMethod);
+    user.payment_methods.push(newPaymentMethod);
 
-      await user.save();
+    await user.save();
 
-      res.status(200).json({ message: 'Payment method added successfully', user });
+    res
+      .status(200)
+      .json({ message: "Payment method added successfully", user });
   } catch (error) {
-      res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -169,12 +187,12 @@ const editPaymentMethod = async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const paymentMethod = user.payment_methods.id(paymentMethodId);
     if (!paymentMethod) {
-      return res.status(404).json({ message: 'Payment method not found' });
+      return res.status(404).json({ message: "Payment method not found" });
     }
 
     // Update fields only if provided in the request
@@ -184,9 +202,11 @@ const editPaymentMethod = async (req, res) => {
     if (name_on_card) paymentMethod.name_on_card = name_on_card;
 
     await user.save();
-    res.status(200).json({ message: 'Payment method updated successfully', user });
+    res
+      .status(200)
+      .json({ message: "Payment method updated successfully", user });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -198,37 +218,38 @@ const removePaymentMethod = async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     const paymentMethod = user.payment_methods.id(paymentMethodId);
     if (!paymentMethod) {
-      return res.status(404).json({ message: 'Payment method not found' });
+      return res.status(404).json({ message: "Payment method not found" });
     }
 
     paymentMethod.remove();
     await user.save();
-    res.status(200).json({ message: 'Payment method removed successfully', user });
+    res
+      .status(200)
+      .json({ message: "Payment method removed successfully", user });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
-
 
 const getUser = async (req, res) => {
   try {
     const userId = req.params.userId;
 
-    const user = await User.findById(userId).select('-password');
+    const user = await User.findById(userId).select("-password");
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     return res.status(200).json(user);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -241,5 +262,5 @@ module.exports = {
   addPaymentMethod,
   editPaymentMethod,
   removePaymentMethod,
-  getUser
+  getUser,
 };
