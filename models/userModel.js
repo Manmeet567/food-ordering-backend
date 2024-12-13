@@ -47,10 +47,6 @@ const paymentMethodSchema = new Schema({
   name_on_card: {
     type: String,
     required: false
-  },
-  active: {
-    type: Boolean,
-    default: false
   }
 });
 
